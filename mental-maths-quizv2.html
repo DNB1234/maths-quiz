@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mental Maths — Quant Prep</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #222222;
+      --border: #2e2e2e;
+      --accent: #c8f05a;
+      --accent-dim: #9bbf3a;
+      --text: #f0f0f0;
+      --muted: #888;
+      --danger: #ff5a5a;
+      --success: #5affa3;
+      --warning: #ffd166;
+      --radius: 10px;
+      --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 1.5rem 1rem 3rem;
+    }
+
+    #app { width: 100%; max-width: 480px; }
+
+    .screen { display: none; flex-direction: column; gap: 1.2rem; }
+    .screen.active { display: flex; }
+
+    .label {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--radius);
+      border: none;
+      font-family: var(--font);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.12s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--accent); color: #111; }
+    .btn-primary:hover { background: var(--accent-dim); }
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: #555; }
+    .btn-sm {
+      padding: 0.55rem 1rem;
+      font-size: 0.85rem;
+      width: auto;
+      display: inline-block;
+    }
+
+    /* ── START SCREEN ── */
+    .brand { text-align: center; padding: 1.5rem 0 0.5rem; }
+    .brand h1 { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.02em; }
+    .brand p { margin-top: 0.4rem; color: var(--muted); font-size: 0.88rem; }
+
+    /* Name input */
+    .name-input-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
+    .name-input-wrap input {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-family: var(--font);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .name-input-wrap input:focus { border-color: var(--accent); }
+
+    /* Mode selector */
+    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .mode-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 0.75rem;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-align: center;
+    }
+    .mode-btn .mode-title { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .mode-btn .mode-desc { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+    .mode-btn.selected { border-color: var(--accent); background: rgba(200,240,90,0.07); }
+    .mode-btn.selected .mode-title { color: var(--accent); }
+
+    /* Duration selector */
+    .duration-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0.45rem;
+    }
+    .dur-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.3rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: var(--font);
+      color: var(--muted);
+      text-align: center;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .dur-btn.selected { border-color: var(--accent); color: var(--accent); }
+
+    /* ── QUIZ SCREEN ── */
+    .quiz-header { display: flex; align-items: flex-start; justify-content: space-between; }
+
+    #timer-display {
+      font-size: 2rem;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.04em;
+      color: var(--accent);
+      transition: color 0.3s;
+    }
+    #timer-display.urgent { color: var(--danger); }
+
+    .score-row { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
+    .score-pill {
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+    .score-pill.correct { background: rgba(90,255,163,0.12); color: var(--success); }
+    .score-pill.incorrect { background: rgba(255,90,90,0.12); color: var(--danger); }
+    .score-pill.net { background: rgba(200,240,90,0.1); color: var(--accent); }
+
+    .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    #progress-bar { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+
+    #question-display {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      text-align: center;
+      line-height: 1.2;
+      padding: 0.4rem 0;
+    }
+
+    .format-badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 2px 8px;
+    }
+
+    .neg-mark-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    /* Multiple choice */
+    #mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .mc-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 0.5rem;
+      font-size: 1.1rem;
+      font-weight: 500;
+      font-family: var(--font);
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+      text-align: center;
+    }
+    .mc-btn:hover { border-color: var(--accent); }
+    .mc-btn.correct { border-color: var(--success); background: rgba(90,255,163,0.1); color: var(--success); }
+    .mc-btn.incorrect { border-color: var(--danger); background: rgba(255,90,90,0.1); color: var(--danger); }
+    .mc-btn:disabled { cursor: default; }
+
+    /* Free input */
+    #fi-form { display: flex; gap: 0.5rem; }
+    #fi-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      font-size: 1.2rem;
+      font-family: var(--font);
+      color: var(--text);
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    #fi-input:focus { border-color: var(--accent); }
+    #fi-submit {
+      flex-shrink: 0;
+      padding: 0.75rem 1.2rem;
+      background: var(--accent);
+      color: #111;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: var(--font);
+      cursor: pointer;
+    }
+    #fi-submit:hover { opacity: 0.85; }
+
+    #feedback {
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      min-height: 1.2em;
+      color: var(--muted);
+    }
+    #feedback.correct { color: var(--success); }
+    #feedback.incorrect { color: var(--danger); }
+
+    /* ── RESULTS SCREEN ── */
+    .result-headline { text-align: center; font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; }
+    .result-score-big { text-align: center; font-size: 3.5rem; font-weight: 700; color: var(--accent); letter-spacing: -0.04em; line-height: 1; }
+    .result-score-label { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .stat-box {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.85rem 1rem;
+      text-align: center;
+    }
+    .stat-box .sv { font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+    .stat-box .sk { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+    .stat-box .sv.green { color: var(--success); }
+    .stat-box .sv.red { color: var(--danger); }
+    .stat-box .sv.gold { color: var(--accent); }
+
+    /* ── LEADERBOARD ── */
+    .lb-header { display: flex; align-items: center; justify-content: space-between; }
+    .lb-meta { font-size: 0.75rem; color: var(--muted); }
+    .lb-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    .lb-table th {
+      text-align: left;
+      color: var(--muted);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0 0 0.5rem;
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+    }
+    .lb-table th:last-child { text-align: right; }
+    .lb-table td { padding: 0.55rem 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    .lb-table tr:last-child td { border-bottom: none; }
+    .lb-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    .lb-rank { width: 28px; color: var(--muted); font-weight: 500; }
+    .lb-rank.gold { color: #ffd700; }
+    .lb-rank.silver { color: #c0c0c0; }
+    .lb-rank.bronze { color: #cd7f32; }
+    .lb-name { font-weight: 500; }
+    .lb-score { font-weight: 600; color: var(--accent); }
+    .lb-detail { font-size: 0.72rem; color: var(--muted); }
+    .lb-empty { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem 0; }
+    .lb-new { color: var(--warning); font-size: 0.7rem; margin-left: 4px; }
+
+    /* Nav tabs */
+    .tabs { display: flex; gap: 0.4rem; }
+    .tab-btn {
+      flex: 1;
+      padding: 0.55rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-family: var(--font);
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+      text-align: center;
+    }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); }
+
+    @media (max-width: 380px) {
+      #question-display { font-size: 1.6rem; }
+      #timer-display { font-size: 1.6rem; }
+      .duration-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════════════════════════════════
+       START SCREEN
+  ══════════════════════════════════════ -->
+  <div id="screen-start" class="screen active">
+
+    <div class="brand">
+      <h1>Mental Maths</h1>
+      <p>Quant-style timed practice</p>
+    </div>
+
+    <!-- Player name -->
+    <div class="card">
+      <div class="label" style="margin-bottom:0.5rem;">Your name</div>
+      <div class="name-input-wrap">
+        <input type="text" id="player-name" placeholder="Enter your name for the leaderboard" maxlength="20" autocomplete="off" />
+      </div>
+    </div>
+
+    <!-- Game mode -->
+    <div class="card">
+      <div class="label" style="margin-bottom:0.6rem;">Game mode</div>
+      <div class="mode-grid">
+        <div class="mode-btn selected" data-mode="mc" onclick="selectMode('mc')">
+          <div class="mode-title">Mode 1</div>
+          <div class="mode-desc">Multiple choice only</div>
+        </div>
+        <div class="mode-btn" data-mode="fi" onclick="selectMode('fi')">
+          <div class="mode-title">Mode 2</div>
+          <div class="mode-desc">Written answers only</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Duration -->
+    <div class="card">
+      <div class="label" style="margin-bottom:0.6rem;">Session length</div>
+      <div class="duration-grid" id="duration-grid">
+        <!-- filled by JS -->
+      </div>
+    </div>
+
+    <!-- Start -->
+    <button class="btn btn-primary" id="start-btn">Start session</button>
+
+    <!-- View leaderboard -->
+    <button class="btn btn-ghost" onclick="showLeaderboardScreen()">View leaderboard</button>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       QUIZ SCREEN
+  ══════════════════════════════════════ -->
+  <div id="screen-quiz" class="screen">
+
+    <div class="quiz-header">
+      <div>
+        <div class="label">Time remaining</div>
+        <div id="timer-display">3:00</div>
+      </div>
+      <div style="text-align:right">
+        <div class="label">Score</div>
+        <div class="score-row" style="margin-top:4px;">
+          <span class="score-pill correct" id="correct-count">0 ✓</span>
+          <span class="score-pill incorrect" id="incorrect-count">0 ✗</span>
+          <span class="score-pill net" id="net-count">0 pts</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div id="progress-bar"></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:center;margin-bottom:0.75rem;">
+        <span class="format-badge" id="format-badge">multiple choice</span>
+      </div>
+      <div id="question-display">—</div>
+    </div>
+
+    <div id="mc-options"></div>
+
+    <div id="fi-form" style="display:none;">
+      <input type="number" id="fi-input" placeholder="Answer" autocomplete="off" inputmode="decimal" />
+      <button id="fi-submit">Submit</button>
+    </div>
+
+    <div id="feedback"></div>
+    <div class="neg-mark-note">Incorrect answers: −1 point</div>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       RESULTS SCREEN
+  ══════════════════════════════════════ -->
+  <div id="screen-results" class="screen">
+
+    <div class="result-headline">Session complete</div>
+
+    <div class="card" style="padding:1.75rem;">
+      <div class="result-score-big" id="result-pts">—</div>
+      <div class="result-score-label">net points (correct − incorrect)</div>
+      <div style="margin-top:1rem;text-align:center;font-size:0.85rem;color:var(--muted);" id="result-pct-line">—% accuracy</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="sv" id="r-attempted">—</div>
+        <div class="sk">Questions attempted</div>
+      </div>
+      <div class="stat-box">
+        <div class="sv" id="r-avg-time">—</div>
+        <div class="sk">Avg time per question</div>
+      </div>
+      <div class="stat-box">
+        <div class="sv green" id="r-correct">—</div>
+        <div class="sk">Correct</div>
+      </div>
+      <div class="stat-box">
+        <div class="sv red" id="r-incorrect">—</div>
+        <div class="sk">Incorrect</div>
+      </div>
+    </div>
+
+    <!-- Mini leaderboard on results -->
+    <div class="card">
+      <div class="lb-header" style="margin-bottom:0.75rem;">
+        <div class="label">Leaderboard</div>
+        <div class="lb-meta" id="result-lb-meta"></div>
+      </div>
+      <table class="lb-table" id="result-lb-table">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th>Name</th>
+            <th>Pts</th>
+          </tr>
+        </thead>
+        <tbody id="result-lb-body"></tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-primary" id="restart-btn">Start new session</button>
+    <button class="btn btn-ghost" onclick="showLeaderboardScreen()">Full leaderboard</button>
+
+  </div>
+
+  <!-- ══════════════════════════════════════
+       LEADERBOARD SCREEN
+  ══════════════════════════════════════ -->
+  <div id="screen-leaderboard" class="screen">
+
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="btn btn-ghost btn-sm" onclick="showScreen('start')">← Back</button>
+      <span style="font-size:1.1rem;font-weight:600;">Leaderboard</span>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="lb-tab-mc" onclick="switchLBTab('mc')">Mode 1 · Multiple choice</button>
+      <button class="tab-btn" id="lb-tab-fi" onclick="switchLBTab('fi')">Mode 2 · Written</button>
+    </div>
+
+    <!-- Duration sub-tabs -->
+    <div class="duration-grid" id="lb-duration-grid"></div>
+
+    <div class="card">
+      <div class="lb-header" style="margin-bottom:0.75rem;">
+        <div class="label">Top 5</div>
+        <div class="lb-meta" id="lb-meta-line"></div>
+      </div>
+      <table class="lb-table">
+        <thead>
+          <tr>
+            <th style="width:28px">#</th>
+            <th>Name</th>
+            <th>Pts</th>
+            <th>Acc</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="lb-body"></tbody>
+      </table>
+    </div>
+
+    <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);opacity:0.7;" onclick="clearLeaderboard()">Clear this leaderboard</button>
+
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  QUESTION GENERATOR
+// ═══════════════════════════════════════════════════════════════
+
+const RNG = {
+  int: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
+  pick: arr => arr[Math.floor(Math.random() * arr.length)],
+  bool: () => Math.random() < 0.5,
+};
+
+const GENERATORS = {
+  addition: {
+    easy:   () => { const a=RNG.int(20,99),  b=RNG.int(20,99);  return {q:`${a} + ${b}`, a:a+b}; },
+    medium: () => { const a=RNG.int(100,499), b=RNG.int(50,299); return {q:`${a} + ${b}`, a:a+b}; },
+    hard:   () => { const a=RNG.int(250,999), b=RNG.int(150,750);return {q:`${a} + ${b}`, a:a+b}; },
+  },
+  subtraction: {
+    easy:   () => { const b=RNG.int(15,60),  a=b+RNG.int(20,80);  return {q:`${a} − ${b}`, a:a-b}; },
+    medium: () => { const b=RNG.int(40,199), a=b+RNG.int(100,350);return {q:`${a} − ${b}`, a:a-b}; },
+    hard:   () => { const b=RNG.int(150,499),a=b+RNG.int(200,600);return {q:`${a} − ${b}`, a:a-b}; },
+  },
+  multiplication: {
+    easy:   () => { const a=RNG.int(6,15),  b=RNG.int(6,15);  return {q:`${a} × ${b}`, a:a*b}; },
+    medium: () => RNG.pick([
+      () => { const a=RNG.int(12,30), b=RNG.int(12,25); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(15,99), b=RNG.pick([5,8,15,25]); return {q:`${a} × ${b}`, a:a*b}; },
+    ])(),
+    hard: () => RNG.pick([
+      () => { const a=RNG.int(25,75), b=RNG.int(15,40); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(50,125),b=RNG.pick([11,12,13,14,15,16]); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(20,50), b=RNG.int(20,50); return {q:`${a} × ${b}`, a:a*b}; },
+    ])(),
+  },
+  division: {
+    easy:   () => { const b=RNG.pick([4,5,6,7,8,9]); const a=b*RNG.int(6,15);  return {q:`${a} ÷ ${b}`, a:a/b}; },
+    medium: () => { const b=RNG.pick([6,7,8,9,11,12,13,14,15]); const a=b*RNG.int(10,30); return {q:`${a} ÷ ${b}`, a:a/b}; },
+    hard: () => RNG.pick([
+      () => { const b=RNG.pick([12,14,15,16,18,20,22,24,25]); const a=b*RNG.int(15,50); return {q:`${a} ÷ ${b}`, a:a/b}; },
+      () => { const b=RNG.pick([4,5,8]); const a=b*RNG.int(10,30)+(b/2); return {q:`${a} ÷ ${b}`, a:+(a/b).toFixed(1)}; },
+    ])(),
+  },
+};
+
+function pickDiff() {
+  const r = RNG.int(1,100);
+  return r<=15 ? 'easy' : r<=55 ? 'medium' : 'hard';
+}
+
+function generateQuestion() {
+  const ops = ['addition','subtraction','multiplication','division'];
+  const op  = RNG.pick(ops);
+  const diff= pickDiff();
+  const {q,a} = GENERATORS[op][diff]();
+  return { question:q, answer:a, operation:op, difficulty:diff };
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DISTRACTOR GENERATOR
+// ═══════════════════════════════════════════════════════════════
+
+function generateDistractors(ans, op) {
+  const strategies = {
+    addition:       [()=>ans+RNG.pick([1,2,9,10,11]), ()=>ans-RNG.pick([1,2,9,10,11]), ()=>ans+RNG.pick([-20,15,20,100]), ()=>ans+RNG.pick([-1,1])*RNG.int(5,20)],
+    subtraction:    [()=>ans+RNG.pick([1,2,9,10,11]), ()=>ans-RNG.pick([1,2,9,10,11]), ()=>-ans, ()=>ans+RNG.int(5,25)],
+    multiplication: [()=>ans+RNG.pick([-10,10,-12,12]), ()=>ans+RNG.pick([-50,50,-100,100]), ()=>Math.round(ans*1.1), ()=>Math.round(ans*0.9), ()=>ans+RNG.int(-30,30)],
+    division:       [()=>+(ans+RNG.pick([1,2,3,0.5])).toFixed(1), ()=>+(ans-RNG.pick([1,2,3,0.5])).toFixed(1), ()=>+(ans*2).toFixed(1), ()=>+(ans+RNG.pick([-5,5,-10,10])).toFixed(1)],
+  };
+  const strats = strategies[op] || strategies.addition;
+  const set = new Set();
+  let tries = 0;
+  while (set.size < 3 && tries < 40) {
+    const v = RNG.pick(strats)();
+    if (v !== ans && v > 0 && !set.has(v)) set.add(v);
+    tries++;
+  }
+  while (set.size < 3) {
+    const off = RNG.int(1, Math.max(5, Math.floor(Math.abs(ans)*0.15)));
+    const c   = RNG.bool() ? ans+off : ans-off;
+    if (c !== ans && c > 0 && !set.has(c)) set.add(c);
+  }
+  return [...set];
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SETTINGS STATE
+// ═══════════════════════════════════════════════════════════════
+
+let selectedMode     = 'mc';  // 'mc' | 'fi'
+let selectedDuration = 3;     // minutes
+let playerName       = '';
+
+const DURATIONS = [1,2,3,4,5,6,7,8,9,10];
+
+function selectMode(m) {
+  selectedMode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('selected', b.dataset.mode === m);
+  });
+}
+
+function selectDuration(d) {
+  selectedDuration = d;
+  document.querySelectorAll('.dur-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.dur) === d);
+  });
+  // Also update leaderboard duration if on that screen
+  document.querySelectorAll('#lb-duration-grid .dur-btn').forEach(b => {
+    b.classList.toggle('selected', parseInt(b.dataset.dur) === d);
+  });
+}
+
+function buildDurationGrid(containerId, onSelect) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  DURATIONS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'dur-btn' + (d === selectedDuration ? ' selected' : '');
+    btn.dataset.dur = d;
+    btn.textContent = d === 1 ? '1 min' : `${d}m`;
+    btn.onclick = () => onSelect(d);
+    container.appendChild(btn);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════════════════
+
+let timerInterval = null;
+let timeRemaining = 0;
+let totalDurationSecs = 0;
+
+function formatTime(s) {
+  const m = Math.floor(s/60);
+  return `${m}:${String(s%60).padStart(2,'0')}`;
+}
+
+function startTimer(durationMins, onTick, onEnd) {
+  clearInterval(timerInterval);
+  totalDurationSecs = durationMins * 60;
+  timeRemaining     = totalDurationSecs;
+  onTick(timeRemaining);
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    onTick(timeRemaining);
+    if (timeRemaining <= 0) { clearInterval(timerInterval); onEnd(); }
+  }, 1000);
+}
+
+function stopTimer() { clearInterval(timerInterval); }
+
+// ═══════════════════════════════════════════════════════════════
+//  SCORE TRACKING
+// ═══════════════════════════════════════════════════════════════
+
+let correct = 0, incorrect = 0, attempted = 0;
+let questionTimes = [], qStart = null;
+
+function resetScore() {
+  correct = 0; incorrect = 0; attempted = 0;
+  questionTimes = []; qStart = null;
+}
+
+function startQClock() { qStart = Date.now(); }
+
+function recordAnswer(isCorrect) {
+  attempted++;
+  if (isCorrect) correct++; else incorrect++;
+  if (qStart !== null) questionTimes.push((Date.now() - qStart) / 1000);
+}
+
+function netScore()  { return correct - incorrect; }
+function accuracy()  { return attempted ? Math.round((correct/attempted)*100) : 0; }
+function avgTime()   {
+  if (!questionTimes.length) return '—';
+  return (questionTimes.reduce((a,b)=>a+b,0)/questionTimes.length).toFixed(1) + 's';
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LEADERBOARD  (localStorage, top 5 per mode+duration)
+// ═══════════════════════════════════════════════════════════════
+
+function lbKey(mode, duration) {
+  return `mq_lb_${mode}_${duration}`;
+}
+
+function loadLB(mode, duration) {
+  try { return JSON.parse(localStorage.getItem(lbKey(mode, duration))) || []; }
+  catch(e) { return []; }
+}
+
+function saveLB(mode, duration, entries) {
+  localStorage.setItem(lbKey(mode, duration), JSON.stringify(entries));
+}
+
+function submitScore(name, mode, duration, pts, acc, avgT) {
+  const entries = loadLB(mode, duration);
+  const entry = {
+    name: name || 'Anonymous',
+    pts,
+    acc,
+    avgTime: avgT,
+    date: new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short'}),
+    ts: Date.now()
+  };
+  entries.push(entry);
+  entries.sort((a,b) => b.pts - a.pts || b.acc - a.acc);
+  const top5 = entries.slice(0, 5);
+  saveLB(mode, duration, top5);
+  return top5;
+}
+
+function isNewRecord(mode, duration, pts) {
+  const entries = loadLB(mode, duration);
+  return entries.length === 0 || pts > entries[0].pts;
+}
+
+// ── Rank medal helper ──
+function rankClass(i) {
+  return i===0 ? 'gold' : i===1 ? 'silver' : i===2 ? 'bronze' : '';
+}
+function rankLabel(i) {
+  return i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : i+1;
+}
+
+function renderLBRows(entries, tbodyId, currentName, currentTs, compact) {
+  const tbody = document.getElementById(tbodyId);
+  if (!entries || !entries.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="lb-empty">No scores yet. Be the first!</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = entries.map((e,i) => {
+    const isMe = currentTs && e.ts === currentTs;
+    const medal = `<span class="lb-rank ${rankClass(i)}">${rankLabel(i)}</span>`;
+    const newTag = isMe ? `<span class="lb-new">★ you</span>` : '';
+    if (compact) {
+      return `<tr>
+        <td>${medal}</td>
+        <td class="lb-name">${e.name}${newTag}</td>
+        <td class="lb-score">${e.pts}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td>${medal}</td>
+      <td class="lb-name">${e.name}${newTag}<br><span class="lb-detail">${e.avgTime} avg</span></td>
+      <td class="lb-score">${e.pts}</td>
+      <td class="lb-detail">${e.acc}%</td>
+      <td class="lb-detail">${e.date}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${name}`).classList.add('active');
+}
+
+function updateTimerDisplay(remaining) {
+  document.getElementById('timer-display').textContent = formatTime(remaining);
+  document.getElementById('progress-bar').style.width = `${(remaining/totalDurationSecs)*100}%`;
+  if (remaining <= 30) document.getElementById('timer-display').classList.add('urgent');
+}
+
+function updateScoreDisplay() {
+  document.getElementById('correct-count').textContent  = `${correct} ✓`;
+  document.getElementById('incorrect-count').textContent = `${incorrect} ✗`;
+  document.getElementById('net-count').textContent      = `${netScore()} pts`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  QUIZ LOGIC
+// ═══════════════════════════════════════════════════════════════
+
+let currentQuestion = null;
+
+function presentQuestion() {
+  currentQuestion = generateQuestion();
+  startQClock();
+
+  document.getElementById('question-display').textContent = currentQuestion.question;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className   = '';
+
+  if (selectedMode === 'mc') {
+    document.getElementById('format-badge').textContent = 'multiple choice';
+    renderMC();
+    document.getElementById('mc-options').style.display = 'grid';
+    document.getElementById('fi-form').style.display    = 'none';
+  } else {
+    document.getElementById('format-badge').textContent = 'written answer';
+    document.getElementById('mc-options').style.display = 'none';
+    document.getElementById('fi-form').style.display    = 'flex';
+    document.getElementById('fi-input').value = '';
+    setTimeout(() => document.getElementById('fi-input').focus(), 50);
+  }
+}
+
+function renderMC() {
+  const {answer, operation} = currentQuestion;
+  const distractors = generateDistractors(answer, operation);
+  const opts = [answer, ...distractors].sort(() => Math.random() - 0.5);
+
+  const container = document.getElementById('mc-options');
+  container.innerHTML = '';
+
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'mc-btn';
+    btn.textContent = opt;
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.mc-btn').forEach(b => b.disabled = true);
+      const ok = opt == currentQuestion.answer;
+      recordAnswer(ok);
+      updateScoreDisplay();
+      btn.classList.add(ok ? 'correct' : 'incorrect');
+      if (!ok) {
+        container.querySelectorAll('.mc-btn').forEach(b => {
+          if (b.textContent == currentQuestion.answer) b.classList.add('correct');
+        });
+      }
+      setTimeout(presentQuestion, 450);
+    });
+    container.appendChild(btn);
+  });
+}
+
+function handleFISubmit() {
+  const raw = document.getElementById('fi-input').value.trim();
+  if (!raw) return;
+  const ua  = parseFloat(raw);
+  const ok  = Math.abs(ua - currentQuestion.answer) < 0.05;
+  recordAnswer(ok);
+  updateScoreDisplay();
+  const fb = document.getElementById('feedback');
+  fb.textContent = ok ? '✓ Correct' : `✗ Answer was ${currentQuestion.answer}`;
+  fb.className   = ok ? 'correct' : 'incorrect';
+  setTimeout(presentQuestion, 550);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  END OF SESSION
+// ═══════════════════════════════════════════════════════════════
+
+let lastEntryTs = null;
+
+function endSession() {
+  stopTimer();
+
+  const pts = netScore();
+  const acc = accuracy();
+  const avg = avgTime();
+
+  // Submit to leaderboard
+  const name   = playerName || 'Anonymous';
+  lastEntryTs  = Date.now();
+  const entries = submitScore(name, selectedMode, selectedDuration, pts, acc, avg);
+  // Fix timestamp: the entry we just added is the one matching our score and time
+  // Find it and patch ts so we can highlight it
+  const myEntry = entries.find(e => e.name===name && e.pts===pts && !e._found);
+  if (myEntry) { myEntry.ts = lastEntryTs; myEntry._found = true; saveLB(selectedMode, selectedDuration, entries); }
+
+  // Populate results screen
+  document.getElementById('result-pts').textContent      = pts > 0 ? `+${pts}` : `${pts}`;
+  document.getElementById('result-pct-line').textContent = `${acc}% accuracy`;
+  document.getElementById('r-attempted').textContent     = attempted;
+  document.getElementById('r-correct').textContent       = correct;
+  document.getElementById('r-incorrect').textContent     = incorrect;
+  document.getElementById('r-avg-time').textContent      = avg;
+
+  const modeLabel = selectedMode === 'mc' ? 'Mode 1 · Multiple choice' : 'Mode 2 · Written';
+  document.getElementById('result-lb-meta').textContent = `${modeLabel} · ${selectedDuration} min`;
+
+  const freshEntries = loadLB(selectedMode, selectedDuration);
+  renderLBRows(freshEntries, 'result-lb-body', name, lastEntryTs, true);
+
+  showScreen('results');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LEADERBOARD SCREEN
+// ═══════════════════════════════════════════════════════════════
+
+let lbMode     = 'mc';
+let lbDuration = 3;
+
+function showLeaderboardScreen() {
+  lbMode     = selectedMode;
+  lbDuration = selectedDuration;
+  buildDurationGrid('lb-duration-grid', d => { lbDuration = d; refreshLBScreen(); buildDurationGrid('lb-duration-grid', d2 => { lbDuration=d2; refreshLBScreen(); buildDurationGrid('lb-duration-grid', ()=>{}, lbDuration); }, lbDuration); });
+  switchLBTab(lbMode);
+  showScreen('leaderboard');
+}
+
+// Rebuild LB duration grid with correct selection
+function buildLBDurationGrid() {
+  const container = document.getElementById('lb-duration-grid');
+  container.innerHTML = '';
+  DURATIONS.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'dur-btn' + (d === lbDuration ? ' selected' : '');
+    btn.dataset.dur = d;
+    btn.textContent = d === 1 ? '1 min' : `${d}m`;
+    btn.onclick = () => { lbDuration = d; buildLBDurationGrid(); refreshLBScreen(); };
+    container.appendChild(btn);
+  });
+}
+
+function switchLBTab(mode) {
+  lbMode = mode;
+  document.getElementById('lb-tab-mc').classList.toggle('active', mode==='mc');
+  document.getElementById('lb-tab-fi').classList.toggle('active', mode==='fi');
+  buildLBDurationGrid();
+  refreshLBScreen();
+}
+
+function refreshLBScreen() {
+  const entries  = loadLB(lbMode, lbDuration);
+  const modeLabel= lbMode==='mc' ? 'Mode 1 · Multiple choice' : 'Mode 2 · Written';
+  document.getElementById('lb-meta-line').textContent = `${modeLabel} · ${lbDuration} min`;
+  renderLBRows(entries, 'lb-body', null, null, false);
+}
+
+function clearLeaderboard() {
+  if (confirm(`Clear the leaderboard for ${lbMode==='mc'?'Mode 1':'Mode 2'} · ${lbDuration} min?`)) {
+    localStorage.removeItem(lbKey(lbMode, lbDuration));
+    refreshLBScreen();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+
+function startSession() {
+  playerName = document.getElementById('player-name').value.trim();
+  if (!playerName) {
+    document.getElementById('player-name').focus();
+    document.getElementById('player-name').style.borderColor = 'var(--danger)';
+    setTimeout(() => document.getElementById('player-name').style.borderColor = '', 1500);
+    return;
+  }
+
+  resetScore();
+  updateScoreDisplay();
+  document.getElementById('timer-display').classList.remove('urgent');
+  document.getElementById('progress-bar').style.width = '100%';
+
+  showScreen('quiz');
+  startTimer(selectedDuration, updateTimerDisplay, endSession);
+  presentQuestion();
+}
+
+// Build start screen grids on load
+buildDurationGrid('duration-grid', d => selectDuration(d));
+selectDuration(3);
+
+// Event listeners
+document.getElementById('start-btn').addEventListener('click', startSession);
+document.getElementById('restart-btn').addEventListener('click', () => showScreen('start'));
+document.getElementById('fi-submit').addEventListener('click', handleFISubmit);
+document.getElementById('fi-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleFISubmit();
+});
+document.getElementById('player-name').addEventListener('input', () => {
+  document.getElementById('player-name').style.borderColor = '';
+});
+</script>
+</body>
+</html>
