@@ -32,7 +32,9 @@
       align-items: flex-start;
       justify-content: center;
       padding: 1.5rem 1rem 3rem;
+      -webkit-tap-highlight-color: transparent;
     }
+    button { font-family: var(--font); touch-action: manipulation; }
 
     #app { width: 100%; max-width: 480px; }
 
@@ -60,7 +62,6 @@
       padding: 0.85rem 1.5rem;
       border-radius: var(--radius);
       border: none;
-      font-family: var(--font);
       font-size: 1rem;
       font-weight: 500;
       cursor: pointer;
@@ -69,17 +70,17 @@
     .btn:active { transform: scale(0.98); }
     .btn-primary { background: var(--accent); color: #111; }
     .btn-primary:hover { background: var(--accent-dim); }
-    .btn-ghost {
-      background: var(--surface2);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
+    .btn-ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
     .btn-ghost:hover { border-color: #555; }
-    .btn-sm {
-      padding: 0.55rem 1rem;
-      font-size: 0.85rem;
-      width: auto;
-      display: inline-block;
+    .btn-sm { padding: 0.55rem 1rem; font-size: 0.85rem; width: auto; display: inline-block; }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.8rem;
+      cursor: pointer;
+      padding: 0.2rem 0.4rem;
     }
 
     /* ── START SCREEN ── */
@@ -87,9 +88,8 @@
     .brand h1 { font-size: 1.7rem; font-weight: 600; letter-spacing: -0.02em; }
     .brand p { margin-top: 0.4rem; color: var(--muted); font-size: 0.88rem; }
 
-    /* Name input */
-    .name-input-wrap { display: flex; flex-direction: column; gap: 0.5rem; }
-    .name-input-wrap input {
+    #player-name {
+      width: 100%;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -100,30 +100,56 @@
       outline: none;
       transition: border-color 0.15s;
     }
-    .name-input-wrap input:focus { border-color: var(--accent); }
+    #player-name:focus { border-color: var(--accent); }
 
-    /* Mode selector */
-    .mode-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+    .mode-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
     .mode-btn {
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 0.9rem 0.75rem;
+      padding: 0.8rem 0.4rem;
       cursor: pointer;
-      transition: border-color 0.15s, background 0.15s;
       text-align: center;
+      color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
     }
-    .mode-btn .mode-title { font-size: 0.9rem; font-weight: 500; color: var(--text); }
-    .mode-btn .mode-desc { font-size: 0.72rem; color: var(--muted); margin-top: 3px; }
+    .mode-btn .mode-title { font-size: 0.88rem; font-weight: 500; }
+    .mode-btn .mode-desc { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
     .mode-btn.selected { border-color: var(--accent); background: rgba(200,240,90,0.07); }
     .mode-btn.selected .mode-title { color: var(--accent); }
 
-    /* Duration selector */
-    .duration-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 0.45rem;
+    /* Segmented toggle (custom mode answer style) */
+    .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.1rem; }
+    .seg-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
     }
+    .seg-btn.selected { border-color: var(--accent); color: var(--accent); }
+
+    /* Number picker */
+    .num-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.6rem; }
+    .num-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 0.35rem; }
+    .num-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+      cursor: pointer;
+      font-variant-numeric: tabular-nums;
+      transition: border-color 0.12s, color 0.12s, background 0.12s;
+    }
+    .num-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(200,240,90,0.1); }
+    .custom-summary { margin-top: 0.8rem; font-size: 0.78rem; color: var(--muted); line-height: 1.4; }
+
+    .duration-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.45rem; }
     .dur-btn {
       background: var(--surface2);
       border: 1px solid var(--border);
@@ -131,16 +157,16 @@
       padding: 0.6rem 0.3rem;
       cursor: pointer;
       font-size: 0.8rem;
-      font-family: var(--font);
       color: var(--muted);
       text-align: center;
       transition: border-color 0.15s, color 0.15s;
     }
     .dur-btn.selected { border-color: var(--accent); color: var(--accent); }
 
+    #start-error { text-align: center; color: var(--danger); font-size: 0.85rem; min-height: 1.2em; }
+
     /* ── QUIZ SCREEN ── */
     .quiz-header { display: flex; align-items: flex-start; justify-content: space-between; }
-
     #timer-display {
       font-size: 2rem;
       font-weight: 700;
@@ -152,18 +178,13 @@
     #timer-display.urgent { color: var(--danger); }
 
     .score-row { display: flex; gap: 0.4rem; flex-wrap: wrap; justify-content: flex-end; }
-    .score-pill {
-      padding: 3px 9px;
-      border-radius: 99px;
-      font-size: 0.75rem;
-      font-weight: 500;
-    }
+    .score-pill { padding: 3px 9px; border-radius: 99px; font-size: 0.75rem; font-weight: 500; }
     .score-pill.correct { background: rgba(90,255,163,0.12); color: var(--success); }
     .score-pill.incorrect { background: rgba(255,90,90,0.12); color: var(--danger); }
     .score-pill.net { background: rgba(200,240,90,0.1); color: var(--accent); }
 
     .progress-bar-wrap { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
-    #progress-bar { height: 100%; background: var(--accent); width: 100%; transition: width 1s linear; }
+    #progress-bar { height: 100%; background: var(--accent); width: 100%; transition: width 0.25s linear; }
 
     #question-display {
       font-size: 2rem;
@@ -185,13 +206,8 @@
       padding: 2px 8px;
     }
 
-    .neg-mark-note {
-      text-align: center;
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
+    .neg-mark-note { text-align: center; font-size: 0.72rem; color: var(--muted); }
 
-    /* Multiple choice */
     #mc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
     .mc-btn {
       background: var(--surface2);
@@ -200,7 +216,6 @@
       padding: 0.85rem 0.5rem;
       font-size: 1.1rem;
       font-weight: 500;
-      font-family: var(--font);
       color: var(--text);
       cursor: pointer;
       transition: border-color 0.12s, background 0.12s;
@@ -211,10 +226,10 @@
     .mc-btn.incorrect { border-color: var(--danger); background: rgba(255,90,90,0.1); color: var(--danger); }
     .mc-btn:disabled { cursor: default; }
 
-    /* Free input */
     #fi-form { display: flex; gap: 0.5rem; }
     #fi-input {
       flex: 1;
+      min-width: 0;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: var(--radius);
@@ -237,18 +252,11 @@
       border-radius: var(--radius);
       font-size: 0.9rem;
       font-weight: 600;
-      font-family: var(--font);
       cursor: pointer;
     }
     #fi-submit:hover { opacity: 0.85; }
 
-    #feedback {
-      text-align: center;
-      font-size: 0.85rem;
-      font-weight: 500;
-      min-height: 1.2em;
-      color: var(--muted);
-    }
+    #feedback { text-align: center; font-size: 0.85rem; font-weight: 500; min-height: 1.2em; color: var(--muted); }
     #feedback.correct { color: var(--success); }
     #feedback.incorrect { color: var(--danger); }
 
@@ -256,6 +264,8 @@
     .result-headline { text-align: center; font-size: 1.4rem; font-weight: 600; letter-spacing: -0.02em; }
     .result-score-big { text-align: center; font-size: 3.5rem; font-weight: 700; color: var(--accent); letter-spacing: -0.04em; line-height: 1; }
     .result-score-label { text-align: center; color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+    .result-line { margin-top: 0.8rem; text-align: center; font-size: 0.85rem; color: var(--muted); }
+    .result-rank { margin-top: 0.5rem; text-align: center; font-size: 0.85rem; font-weight: 500; color: var(--warning); min-height: 1.2em; }
 
     .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
     .stat-box {
@@ -269,11 +279,10 @@
     .stat-box .sk { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
     .stat-box .sv.green { color: var(--success); }
     .stat-box .sv.red { color: var(--danger); }
-    .stat-box .sv.gold { color: var(--accent); }
 
     /* ── LEADERBOARD ── */
-    .lb-header { display: flex; align-items: center; justify-content: space-between; }
-    .lb-meta { font-size: 0.75rem; color: var(--muted); }
+    .lb-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; }
+    .lb-meta { font-size: 0.75rem; color: var(--muted); text-align: right; }
     .lb-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
     .lb-table th {
       text-align: left;
@@ -285,30 +294,23 @@
       font-weight: 500;
       border-bottom: 1px solid var(--border);
     }
-    .lb-table th:last-child { text-align: right; }
+    .lb-table th.r, .lb-table td.r { text-align: right; font-variant-numeric: tabular-nums; }
     .lb-table td { padding: 0.55rem 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
     .lb-table tr:last-child td { border-bottom: none; }
-    .lb-table td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
-    .lb-rank { width: 28px; color: var(--muted); font-weight: 500; }
-    .lb-rank.gold { color: #ffd700; }
-    .lb-rank.silver { color: #c0c0c0; }
-    .lb-rank.bronze { color: #cd7f32; }
+    .lb-rank { display: inline-block; width: 28px; color: var(--muted); font-weight: 500; }
     .lb-name { font-weight: 500; }
     .lb-score { font-weight: 600; color: var(--accent); }
-    .lb-detail { font-size: 0.72rem; color: var(--muted); }
+    .lb-detail { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
     .lb-empty { text-align: center; color: var(--muted); font-size: 0.85rem; padding: 1.5rem 0; }
     .lb-new { color: var(--warning); font-size: 0.7rem; margin-left: 4px; }
 
-    /* Nav tabs */
-    .tabs { display: flex; gap: 0.4rem; }
+    .tabs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem; }
     .tab-btn {
-      flex: 1;
-      padding: 0.55rem;
+      padding: 0.6rem 0.4rem;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 8px;
       font-size: 0.78rem;
-      font-family: var(--font);
       color: var(--muted);
       cursor: pointer;
       transition: border-color 0.12s, color 0.12s;
@@ -319,16 +321,13 @@
     @media (max-width: 380px) {
       #question-display { font-size: 1.6rem; }
       #timer-display { font-size: 1.6rem; }
-      .duration-grid { grid-template-columns: repeat(5, 1fr); }
     }
   </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ══════════════════════════════════════
-       START SCREEN
-  ══════════════════════════════════════ -->
+  <!-- ══════════ START SCREEN ══════════ -->
   <div id="screen-start" class="screen active">
 
     <div class="brand">
@@ -336,48 +335,60 @@
       <p>Quant-style timed practice</p>
     </div>
 
-    <!-- Player name -->
     <div class="card">
       <div class="label" style="margin-bottom:0.5rem;">Your name</div>
-      <div class="name-input-wrap">
-        <input type="text" id="player-name" placeholder="Enter your name for the leaderboard" maxlength="20" autocomplete="off" />
-      </div>
+      <input type="text" id="player-name" placeholder="Enter your name for the leaderboard" maxlength="20" autocomplete="off" />
     </div>
 
-    <!-- Game mode -->
     <div class="card">
       <div class="label" style="margin-bottom:0.6rem;">Game mode</div>
       <div class="mode-grid">
-        <div class="mode-btn selected" data-mode="mc" onclick="selectMode('mc')">
+        <button class="mode-btn selected" data-mode="mc">
           <div class="mode-title">Mode 1</div>
-          <div class="mode-desc">Multiple choice only</div>
-        </div>
-        <div class="mode-btn" data-mode="fi" onclick="selectMode('fi')">
+          <div class="mode-desc">Multiple choice</div>
+        </button>
+        <button class="mode-btn" data-mode="fi">
           <div class="mode-title">Mode 2</div>
-          <div class="mode-desc">Written answers only</div>
-        </div>
+          <div class="mode-desc">Written answers</div>
+        </button>
+        <button class="mode-btn" data-mode="custom">
+          <div class="mode-title">Mode 3</div>
+          <div class="mode-desc">Your numbers</div>
+        </button>
       </div>
     </div>
 
-    <!-- Duration -->
+    <!-- Only visible when Mode 3 is selected -->
+    <div class="card" id="custom-panel" style="display:none;">
+      <div class="label" style="margin-bottom:0.6rem;">Answer style</div>
+      <div class="seg">
+        <button class="seg-btn selected" data-style="mc">Multiple choice</button>
+        <button class="seg-btn" data-style="fi">Written</button>
+      </div>
+
+      <div class="num-toolbar">
+        <div class="label">Pick your numbers (1–50)</div>
+        <div>
+          <button class="link-btn" id="num-all">All</button>
+          <button class="link-btn" id="num-clear">Clear</button>
+        </div>
+      </div>
+      <div class="num-grid" id="num-grid"></div>
+      <div class="custom-summary" id="custom-summary"></div>
+    </div>
+
     <div class="card">
       <div class="label" style="margin-bottom:0.6rem;">Session length</div>
-      <div class="duration-grid" id="duration-grid">
-        <!-- filled by JS -->
-      </div>
+      <div class="duration-grid" id="duration-grid"></div>
     </div>
 
-    <!-- Start -->
     <button class="btn btn-primary" id="start-btn">Start session</button>
-
-    <!-- View leaderboard -->
-    <button class="btn btn-ghost" onclick="showLeaderboardScreen()">View leaderboard</button>
+    <div id="start-error"></div>
+    <button class="btn btn-ghost" id="view-lb-btn">View leaderboard</button>
 
   </div>
 
-  <!-- ══════════════════════════════════════
-       QUIZ SCREEN
-  ══════════════════════════════════════ -->
+  <!-- ══════════ QUIZ SCREEN ══════════ -->
   <div id="screen-quiz" class="screen">
 
     <div class="quiz-header">
@@ -395,9 +406,7 @@
       </div>
     </div>
 
-    <div class="progress-bar-wrap">
-      <div id="progress-bar"></div>
-    </div>
+    <div class="progress-bar-wrap"><div id="progress-bar"></div></div>
 
     <div class="card">
       <div style="display:flex;justify-content:center;margin-bottom:0.75rem;">
@@ -409,18 +418,20 @@
     <div id="mc-options"></div>
 
     <div id="fi-form" style="display:none;">
-      <input type="number" id="fi-input" placeholder="Answer" autocomplete="off" inputmode="decimal" />
+      <input type="text" id="fi-input" placeholder="Answer" autocomplete="off" autocorrect="off" inputmode="decimal" />
       <button id="fi-submit">Submit</button>
     </div>
 
     <div id="feedback"></div>
-    <div class="neg-mark-note">Incorrect answers: −1 point</div>
+    <div class="neg-mark-note" id="neg-note">Incorrect answers: −1 point</div>
+
+    <div style="text-align:center;">
+      <button class="link-btn" id="quit-btn" style="color:var(--muted);">Quit session</button>
+    </div>
 
   </div>
 
-  <!-- ══════════════════════════════════════
-       RESULTS SCREEN
-  ══════════════════════════════════════ -->
+  <!-- ══════════ RESULTS SCREEN ══════════ -->
   <div id="screen-results" class="screen">
 
     <div class="result-headline">Session complete</div>
@@ -428,98 +439,75 @@
     <div class="card" style="padding:1.75rem;">
       <div class="result-score-big" id="result-pts">—</div>
       <div class="result-score-label">net points (correct − incorrect)</div>
-      <div style="margin-top:1rem;text-align:center;font-size:0.85rem;color:var(--muted);" id="result-pct-line">—% accuracy</div>
+      <div class="result-line" id="result-pct-line">—</div>
+      <div class="result-line" id="result-meta-line" style="margin-top:0.25rem;font-size:0.78rem;"></div>
+      <div class="result-rank" id="result-rank"></div>
     </div>
 
     <div class="stats-grid">
-      <div class="stat-box">
-        <div class="sv" id="r-attempted">—</div>
-        <div class="sk">Questions attempted</div>
-      </div>
-      <div class="stat-box">
-        <div class="sv" id="r-avg-time">—</div>
-        <div class="sk">Avg time per question</div>
-      </div>
-      <div class="stat-box">
-        <div class="sv green" id="r-correct">—</div>
-        <div class="sk">Correct</div>
-      </div>
-      <div class="stat-box">
-        <div class="sv red" id="r-incorrect">—</div>
-        <div class="sk">Incorrect</div>
-      </div>
+      <div class="stat-box"><div class="sv" id="r-attempted">—</div><div class="sk">Questions attempted</div></div>
+      <div class="stat-box"><div class="sv" id="r-avg-time">—</div><div class="sk">Avg time per question</div></div>
+      <div class="stat-box"><div class="sv green" id="r-correct">—</div><div class="sk">Correct</div></div>
+      <div class="stat-box"><div class="sv red" id="r-incorrect">—</div><div class="sk">Incorrect</div></div>
     </div>
 
-    <!-- Mini leaderboard on results -->
     <div class="card">
-      <div class="lb-header" style="margin-bottom:0.75rem;">
+      <div class="lb-header">
         <div class="label">Leaderboard</div>
         <div class="lb-meta" id="result-lb-meta"></div>
       </div>
-      <table class="lb-table" id="result-lb-table">
-        <thead>
-          <tr>
-            <th style="width:28px">#</th>
-            <th>Name</th>
-            <th>Pts</th>
-          </tr>
-        </thead>
+      <table class="lb-table">
+        <thead><tr><th style="width:28px">#</th><th>Name</th><th class="r">Pts</th></tr></thead>
         <tbody id="result-lb-body"></tbody>
       </table>
     </div>
 
     <button class="btn btn-primary" id="restart-btn">Start new session</button>
-    <button class="btn btn-ghost" onclick="showLeaderboardScreen()">Full leaderboard</button>
+    <button class="btn btn-ghost" id="results-lb-btn">Full leaderboard</button>
 
   </div>
 
-  <!-- ══════════════════════════════════════
-       LEADERBOARD SCREEN
-  ══════════════════════════════════════ -->
+  <!-- ══════════ LEADERBOARD SCREEN ══════════ -->
   <div id="screen-leaderboard" class="screen">
 
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <button class="btn btn-ghost btn-sm" onclick="showScreen('start')">← Back</button>
+      <button class="btn btn-ghost btn-sm" id="lb-back-btn">← Back</button>
       <span style="font-size:1.1rem;font-weight:600;">Leaderboard</span>
     </div>
 
-    <!-- Mode tabs -->
-    <div class="tabs">
-      <button class="tab-btn active" id="lb-tab-mc" onclick="switchLBTab('mc')">Mode 1 · Multiple choice</button>
-      <button class="tab-btn" id="lb-tab-fi" onclick="switchLBTab('fi')">Mode 2 · Written</button>
-    </div>
-
-    <!-- Duration sub-tabs -->
+    <div class="tabs-grid" id="lb-tabs"></div>
     <div class="duration-grid" id="lb-duration-grid"></div>
 
     <div class="card">
-      <div class="lb-header" style="margin-bottom:0.75rem;">
+      <div class="lb-header">
         <div class="label">Top 5</div>
         <div class="lb-meta" id="lb-meta-line"></div>
       </div>
       <table class="lb-table">
         <thead>
           <tr>
-            <th style="width:28px">#</th>
-            <th>Name</th>
-            <th>Pts</th>
-            <th>Acc</th>
-            <th>Date</th>
+            <th style="width:28px">#</th><th>Name</th><th class="r">Pts</th><th class="r">Acc</th><th class="r">Date</th>
           </tr>
         </thead>
         <tbody id="lb-body"></tbody>
       </table>
     </div>
 
-    <button class="btn btn-ghost btn-sm" style="color:var(--danger);border-color:var(--danger);opacity:0.7;" onclick="clearLeaderboard()">Clear this leaderboard</button>
+    <button class="btn btn-ghost btn-sm" id="lb-clear-btn" style="color:var(--danger);border-color:var(--danger);opacity:0.7;">Clear this leaderboard</button>
 
   </div>
 
 </div>
 
 <script>
+'use strict';
+
+/* LOGIC-START ─────────────────────────────────────────────────────
+   Pure logic: no DOM access in this block (so it is easy to test).
+   ───────────────────────────────────────────────────────────────── */
+
 // ═══════════════════════════════════════════════════════════════
-//  QUESTION GENERATOR
+//  HELPERS
 // ═══════════════════════════════════════════════════════════════
 
 const RNG = {
@@ -528,146 +516,315 @@ const RNG = {
   bool: () => Math.random() < 0.5,
 };
 
+// Round to 2 decimal places (avoids floating-point noise like 3.3000000004)
+const round2 = n => Math.round(n * 100) / 100;
+
+// Display a number without pointless trailing zeros: 4 -> "4", 3.8 -> "3.8"
+const fmt = n => String(round2(n));
+
+const escapeHtml = s => String(s).replace(/[&<>"']/g, c => (
+  { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+));
+
+// ═══════════════════════════════════════════════════════════════
+//  QUESTION GENERATOR — MODES 1 & 2 (standard mixed questions)
+// ═══════════════════════════════════════════════════════════════
+
 const GENERATORS = {
   addition: {
-    easy:   () => { const a=RNG.int(20,99),  b=RNG.int(20,99);  return {q:`${a} + ${b}`, a:a+b}; },
-    medium: () => { const a=RNG.int(100,499), b=RNG.int(50,299); return {q:`${a} + ${b}`, a:a+b}; },
-    hard:   () => { const a=RNG.int(250,999), b=RNG.int(150,750);return {q:`${a} + ${b}`, a:a+b}; },
+    easy:   () => { const a=RNG.int(20,99),   b=RNG.int(20,99);   return {q:`${a} + ${b}`, a:a+b}; },
+    medium: () => { const a=RNG.int(100,499), b=RNG.int(50,299);  return {q:`${a} + ${b}`, a:a+b}; },
+    hard:   () => { const a=RNG.int(250,999), b=RNG.int(150,750); return {q:`${a} + ${b}`, a:a+b}; },
   },
   subtraction: {
-    easy:   () => { const b=RNG.int(15,60),  a=b+RNG.int(20,80);  return {q:`${a} − ${b}`, a:a-b}; },
-    medium: () => { const b=RNG.int(40,199), a=b+RNG.int(100,350);return {q:`${a} − ${b}`, a:a-b}; },
-    hard:   () => { const b=RNG.int(150,499),a=b+RNG.int(200,600);return {q:`${a} − ${b}`, a:a-b}; },
+    easy:   () => { const b=RNG.int(15,60),   a=b+RNG.int(20,80);   return {q:`${a} − ${b}`, a:a-b}; },
+    medium: () => { const b=RNG.int(40,199),  a=b+RNG.int(100,350); return {q:`${a} − ${b}`, a:a-b}; },
+    hard:   () => { const b=RNG.int(150,499), a=b+RNG.int(200,600); return {q:`${a} − ${b}`, a:a-b}; },
   },
   multiplication: {
-    easy:   () => { const a=RNG.int(6,15),  b=RNG.int(6,15);  return {q:`${a} × ${b}`, a:a*b}; },
+    easy:   () => { const a=RNG.int(6,15), b=RNG.int(6,15); return {q:`${a} × ${b}`, a:a*b}; },
     medium: () => RNG.pick([
       () => { const a=RNG.int(12,30), b=RNG.int(12,25); return {q:`${a} × ${b}`, a:a*b}; },
       () => { const a=RNG.int(15,99), b=RNG.pick([5,8,15,25]); return {q:`${a} × ${b}`, a:a*b}; },
     ])(),
     hard: () => RNG.pick([
-      () => { const a=RNG.int(25,75), b=RNG.int(15,40); return {q:`${a} × ${b}`, a:a*b}; },
-      () => { const a=RNG.int(50,125),b=RNG.pick([11,12,13,14,15,16]); return {q:`${a} × ${b}`, a:a*b}; },
-      () => { const a=RNG.int(20,50), b=RNG.int(20,50); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(25,75),  b=RNG.int(15,40); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(50,125), b=RNG.pick([11,12,13,14,15,16]); return {q:`${a} × ${b}`, a:a*b}; },
+      () => { const a=RNG.int(20,50),  b=RNG.int(20,50); return {q:`${a} × ${b}`, a:a*b}; },
     ])(),
   },
   division: {
-    easy:   () => { const b=RNG.pick([4,5,6,7,8,9]); const a=b*RNG.int(6,15);  return {q:`${a} ÷ ${b}`, a:a/b}; },
+    // Division is built "backwards" (divisor × answer = dividend) so answers are clean.
+    easy:   () => { const b=RNG.pick([4,5,6,7,8,9]); const a=b*RNG.int(6,15); return {q:`${a} ÷ ${b}`, a:a/b}; },
     medium: () => { const b=RNG.pick([6,7,8,9,11,12,13,14,15]); const a=b*RNG.int(10,30); return {q:`${a} ÷ ${b}`, a:a/b}; },
     hard: () => RNG.pick([
       () => { const b=RNG.pick([12,14,15,16,18,20,22,24,25]); const a=b*RNG.int(15,50); return {q:`${a} ÷ ${b}`, a:a/b}; },
-      () => { const b=RNG.pick([4,5,8]); const a=b*RNG.int(10,30)+(b/2); return {q:`${a} ÷ ${b}`, a:+(a/b).toFixed(1)}; },
+      // Deliberate one-decimal answer
+      () => { const b=RNG.pick([4,5,8]); const a=b*RNG.int(10,30)+(b/2); return {q:`${a} ÷ ${b}`, a:round2(a/b)}; },
     ])(),
   },
 };
 
-function pickDiff() {
-  const r = RNG.int(1,100);
-  return r<=15 ? 'easy' : r<=55 ? 'medium' : 'hard';
+// Weighted difficulty: easy 15%, medium 40%, hard 45%
+function pickDifficulty() {
+  const r = RNG.int(1, 100);
+  return r <= 15 ? 'easy' : r <= 55 ? 'medium' : 'hard';
 }
 
-function generateQuestion() {
-  const ops = ['addition','subtraction','multiplication','division'];
-  const op  = RNG.pick(ops);
-  const diff= pickDiff();
-  const {q,a} = GENERATORS[op][diff]();
-  return { question:q, answer:a, operation:op, difficulty:diff };
+function generateStandardQuestion() {
+  const operation = RNG.pick(['addition', 'subtraction', 'multiplication', 'division']);
+  const { q, a } = GENERATORS[operation][pickDifficulty()]();
+  return { question: q, answer: round2(a), operation };
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  DISTRACTOR GENERATOR
+//  QUESTION GENERATOR — MODE 3 (questions from the user's numbers)
+// ═══════════════════════════════════════════════════════════════
+//  Picks two DIFFERENT numbers from the chosen set and applies a random
+//  operation. For − and ÷ the larger number always comes first, so
+//  there are no negative answers (e.g. 19 ÷ 5, 5 − 1).
+//  Division answers are rounded to 2 decimal places.
+
+function generateCustomQuestion(nums) {
+  const operation = RNG.pick(['addition', 'subtraction', 'multiplication', 'division']);
+
+  const a = RNG.pick(nums);
+  let b = RNG.pick(nums);
+  while (b === a) b = RNG.pick(nums);
+  const hi = Math.max(a, b), lo = Math.min(a, b);
+
+  // + and × are commutative, so shuffle the order for variety
+  const [x, y] = RNG.bool() ? [a, b] : [b, a];
+
+  switch (operation) {
+    case 'addition':       return { question: `${x} + ${y}`,  answer: x + y,           operation, hi, lo };
+    case 'multiplication': return { question: `${x} × ${y}`,  answer: x * y,           operation, hi, lo };
+    case 'subtraction':    return { question: `${hi} − ${lo}`, answer: hi - lo,         operation, hi, lo };
+    default:               return { question: `${hi} ÷ ${lo}`, answer: round2(hi / lo), operation, hi, lo };
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DISTRACTORS (wrong answers for multiple choice)
 // ═══════════════════════════════════════════════════════════════
 
-function generateDistractors(ans, op) {
-  const strategies = {
-    addition:       [()=>ans+RNG.pick([1,2,9,10,11]), ()=>ans-RNG.pick([1,2,9,10,11]), ()=>ans+RNG.pick([-20,15,20,100]), ()=>ans+RNG.pick([-1,1])*RNG.int(5,20)],
-    subtraction:    [()=>ans+RNG.pick([1,2,9,10,11]), ()=>ans-RNG.pick([1,2,9,10,11]), ()=>-ans, ()=>ans+RNG.int(5,25)],
-    multiplication: [()=>ans+RNG.pick([-10,10,-12,12]), ()=>ans+RNG.pick([-50,50,-100,100]), ()=>Math.round(ans*1.1), ()=>Math.round(ans*0.9), ()=>ans+RNG.int(-30,30)],
-    division:       [()=>+(ans+RNG.pick([1,2,3,0.5])).toFixed(1), ()=>+(ans-RNG.pick([1,2,3,0.5])).toFixed(1), ()=>+(ans*2).toFixed(1), ()=>+(ans+RNG.pick([-5,5,-10,10])).toFixed(1)],
-  };
-  const strats = strategies[op] || strategies.addition;
-  const set = new Set();
-  let tries = 0;
-  while (set.size < 3 && tries < 40) {
-    const v = RNG.pick(strats)();
-    if (v !== ans && v > 0 && !set.has(v)) set.add(v);
-    tries++;
+// Draws from a list of "plausible mistake" functions until we have 3 unique,
+// positive wrong answers. Falls back to nearby values if needed.
+function collectDistractors(ans, candidates, step) {
+  const out = new Set();
+  const valid = v => v > 0 && Math.abs(v - ans) > 1e-9;
+
+  for (let tries = 0; out.size < 3 && tries < 80; tries++) {
+    const v = round2(RNG.pick(candidates)());
+    if (valid(v)) out.add(v);
   }
-  while (set.size < 3) {
-    const off = RNG.int(1, Math.max(5, Math.floor(Math.abs(ans)*0.15)));
-    const c   = RNG.bool() ? ans+off : ans-off;
-    if (c !== ans && c > 0 && !set.has(c)) set.add(c);
+  for (let k = 1; out.size < 3; k++) {
+    for (const sign of [1, -1]) {
+      const v = round2(ans + sign * step * k);
+      if (out.size < 3 && valid(v)) out.add(v);
+    }
   }
-  return [...set];
+  return [...out];
 }
+
+// Standard modes
+function generateDistractors(ans, operation) {
+  const isInt = Number.isInteger(ans);
+  const near  = [1, 2, 9, 10, 11];
+  const c = {
+    addition:       [() => ans + RNG.pick(near), () => ans - RNG.pick(near), () => ans + RNG.int(5, 20), () => ans - RNG.int(5, 20)],
+    subtraction:    [() => ans + RNG.pick(near), () => ans - RNG.pick(near), () => ans + RNG.int(5, 20), () => ans - RNG.int(5, 20)],
+    multiplication: [() => ans + RNG.pick([-12, -10, 10, 12]), () => ans + RNG.pick([-100, -50, 50, 100]),
+                     () => Math.round(ans * 1.1), () => Math.round(ans * 0.9), () => ans + RNG.int(-30, 30)],
+    division: isInt
+      ? [() => ans + RNG.pick([1, 2, 3, 5, 10]), () => ans - RNG.pick([1, 2, 3, 5, 10])]
+      : [() => ans + RNG.pick([0.5, 1, 1.5, 2, 5]), () => ans - RNG.pick([0.5, 1, 1.5, 2, 5])],
+  }[operation];
+  return collectDistractors(ans, c, isInt ? 1 : 0.5);
+}
+
+// Mode 3 (uses the two operands so the mistakes look like real slips)
+function generateCustomDistractors(q) {
+  const { answer: ans, operation, hi, lo } = q;
+  const isInt = Number.isInteger(ans);
+  const c = {
+    addition:       [() => ans + RNG.pick([-10, -2, -1, 1, 2, 10]), () => ans + RNG.int(-5, 5)],
+    subtraction:    [() => ans + RNG.pick([-10, -2, -1, 1, 2, 10]), () => ans + RNG.int(-5, 5)],
+    multiplication: [() => ans + RNG.pick([-hi, hi, -lo, lo]), () => ans + RNG.pick([-10, 10]), () => ans + RNG.pick([-5, -2, 2, 5])],
+    division: isInt
+      ? [() => ans + RNG.pick([-3, -2, -1, 1, 2, 3])]
+      : [() => ans + RNG.pick([-1, -0.5, -0.3, -0.2, -0.1, 0.1, 0.2, 0.3, 0.5, 1])],
+  }[operation];
+  return collectDistractors(ans, c, isInt ? 1 : 0.1);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ANSWER CHECKING
+// ═══════════════════════════════════════════════════════════════
+
+// Accepts typed answers like "3.8", "3,8" or "3.80".
+// Division answers are rounded to 2 d.p., so allow half a hundredth of tolerance.
+function parseTypedAnswer(raw) {
+  const n = parseFloat(String(raw).trim().replace(',', '.'));
+  return Number.isFinite(n) ? n : null;
+}
+function isAnswerCorrect(userValue, correctAnswer) {
+  return Math.abs(userValue - correctAnswer) < 0.0051;
+}
+
+/* LOGIC-END ───────────────────────────────────────────────────── */
+
 
 // ═══════════════════════════════════════════════════════════════
 //  SETTINGS STATE
 // ═══════════════════════════════════════════════════════════════
 
-let selectedMode     = 'mc';  // 'mc' | 'fi'
-let selectedDuration = 3;     // minutes
-let playerName       = '';
+const DURATIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const SETTINGS_KEY = 'mq_settings';
 
-const DURATIONS = [1,2,3,4,5,6,7,8,9,10];
+const MODE_LABELS = {
+  mc:  'Mode 1 · Multiple choice',
+  fi:  'Mode 2 · Written',
+  cmc: 'Mode 3 · Your numbers (MC)',
+  cfi: 'Mode 3 · Your numbers (Written)',
+};
+const MODE_SHORT = { mc: 'Mode 1', fi: 'Mode 2', cmc: 'Mode 3 MC', cfi: 'Mode 3 Written' };
 
-function selectMode(m) {
-  selectedMode = m;
-  document.querySelectorAll('.mode-btn').forEach(b => {
-    b.classList.toggle('selected', b.dataset.mode === m);
-  });
+let selectedMode     = 'mc';   // 'mc' | 'fi' | 'custom'
+let customStyle      = 'mc';   // 'mc' | 'fi'  (only used in Mode 3)
+let selectedDuration = 3;      // minutes
+let customNumbers    = [];     // numbers 1–50 picked for Mode 3
+
+// The key that identifies which leaderboard a session belongs to
+function activeModeKey() {
+  return selectedMode === 'custom' ? 'c' + customStyle : selectedMode;
 }
 
-function selectDuration(d) {
-  selectedDuration = d;
-  document.querySelectorAll('.dur-btn').forEach(b => {
-    b.classList.toggle('selected', parseInt(b.dataset.dur) === d);
-  });
-  // Also update leaderboard duration if on that screen
-  document.querySelectorAll('#lb-duration-grid .dur-btn').forEach(b => {
-    b.classList.toggle('selected', parseInt(b.dataset.dur) === d);
-  });
+function saveSettings() {
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+      name: document.getElementById('player-name').value.trim(),
+      mode: selectedMode, customStyle, duration: selectedDuration, nums: customNumbers,
+    }));
+  } catch (e) { /* storage unavailable: ignore */ }
 }
 
-function buildDurationGrid(containerId, onSelect) {
-  const container = document.getElementById(containerId);
+function loadSettings() {
+  try {
+    const s = JSON.parse(localStorage.getItem(SETTINGS_KEY));
+    if (!s) return;
+    if (['mc', 'fi', 'custom'].includes(s.mode)) selectedMode = s.mode;
+    if (['mc', 'fi'].includes(s.customStyle)) customStyle = s.customStyle;
+    if (DURATIONS.includes(s.duration)) selectedDuration = s.duration;
+    if (Array.isArray(s.nums)) {
+      customNumbers = [...new Set(s.nums.filter(n => Number.isInteger(n) && n >= 1 && n <= 50))].sort((a, b) => a - b);
+    }
+    if (typeof s.name === 'string') document.getElementById('player-name').value = s.name;
+  } catch (e) { /* ignore corrupted settings */ }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UI HELPERS
+// ═══════════════════════════════════════════════════════════════
+
+const $ = id => document.getElementById(id);
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(`screen-${name}`).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function formatTime(s) {
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
+
+function numsLabel(nums) {
+  if (!nums || !nums.length) return '';
+  return nums.length <= 6 ? nums.join(', ') : `${nums.slice(0, 6).join(', ')} +${nums.length - 6} more`;
+}
+
+// ── Start-screen controls ──
+
+function refreshStartScreen() {
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('selected', b.dataset.mode === selectedMode));
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('selected', b.dataset.style === customStyle));
+  document.querySelectorAll('#duration-grid .dur-btn').forEach(b => b.classList.toggle('selected', +b.dataset.dur === selectedDuration));
+  document.querySelectorAll('.num-btn').forEach(b => b.classList.toggle('selected', customNumbers.includes(+b.dataset.n)));
+  $('custom-panel').style.display = selectedMode === 'custom' ? 'block' : 'none';
+
+  const n = customNumbers.length;
+  $('custom-summary').textContent = n === 0
+    ? 'Pick at least 2 numbers. Questions will use +, −, × and ÷ between them.'
+    : n === 1
+      ? `1 selected: ${customNumbers[0]}. Pick at least one more.`
+      : `${n} selected: ${customNumbers.join(', ')}`;
+  $('start-error').textContent = '';
+}
+
+function buildNumberGrid() {
+  const grid = $('num-grid');
+  grid.innerHTML = '';
+  for (let n = 1; n <= 50; n++) {
+    const btn = document.createElement('button');
+    btn.className = 'num-btn';
+    btn.dataset.n = n;
+    btn.textContent = n;
+    btn.addEventListener('click', () => {
+      customNumbers = customNumbers.includes(n)
+        ? customNumbers.filter(x => x !== n)
+        : [...customNumbers, n].sort((a, b) => a - b);
+      refreshStartScreen();
+      saveSettings();
+    });
+    grid.appendChild(btn);
+  }
+}
+
+function buildDurationGrid(containerId, getCurrent, onSelect) {
+  const container = $(containerId);
   container.innerHTML = '';
   DURATIONS.forEach(d => {
     const btn = document.createElement('button');
-    btn.className = 'dur-btn' + (d === selectedDuration ? ' selected' : '');
+    btn.className = 'dur-btn' + (d === getCurrent() ? ' selected' : '');
     btn.dataset.dur = d;
     btn.textContent = d === 1 ? '1 min' : `${d}m`;
-    btn.onclick = () => onSelect(d);
+    btn.addEventListener('click', () => onSelect(d));
     container.appendChild(btn);
   });
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  TIMER
+//  TIMER (based on the real clock, so it stays accurate even if
+//  the browser pauses the page for a moment)
 // ═══════════════════════════════════════════════════════════════
 
-let timerInterval = null;
-let timeRemaining = 0;
-let totalDurationSecs = 0;
+let timerHandle = null;
+let endTime = 0;
+let totalMs = 0;
 
-function formatTime(s) {
-  const m = Math.floor(s/60);
-  return `${m}:${String(s%60).padStart(2,'0')}`;
+function startTimer(minutes, onTick, onEnd) {
+  stopTimer();
+  totalMs = minutes * 60 * 1000;
+  endTime = Date.now() + totalMs;
+  onTick(Math.ceil(totalMs / 1000), 1);
+  timerHandle = setInterval(() => {
+    const msLeft = Math.max(0, endTime - Date.now());
+    onTick(Math.ceil(msLeft / 1000), msLeft / totalMs);
+    if (msLeft <= 0) { stopTimer(); onEnd(); }
+  }, 250);
 }
 
-function startTimer(durationMins, onTick, onEnd) {
-  clearInterval(timerInterval);
-  totalDurationSecs = durationMins * 60;
-  timeRemaining     = totalDurationSecs;
-  onTick(timeRemaining);
-  timerInterval = setInterval(() => {
-    timeRemaining--;
-    onTick(timeRemaining);
-    if (timeRemaining <= 0) { clearInterval(timerInterval); onEnd(); }
-  }, 1000);
+function stopTimer() {
+  clearInterval(timerHandle);
+  timerHandle = null;
 }
 
-function stopTimer() { clearInterval(timerInterval); }
+function updateTimerDisplay(secsLeft, fraction) {
+  $('timer-display').textContent = formatTime(secsLeft);
+  $('progress-bar').style.width = `${fraction * 100}%`;
+  $('timer-display').classList.toggle('urgent', secsLeft <= 30);
+}
 
 // ═══════════════════════════════════════════════════════════════
 //  SCORE TRACKING
@@ -681,221 +838,250 @@ function resetScore() {
   questionTimes = []; qStart = null;
 }
 
-function startQClock() { qStart = Date.now(); }
-
 function recordAnswer(isCorrect) {
   attempted++;
   if (isCorrect) correct++; else incorrect++;
   if (qStart !== null) questionTimes.push((Date.now() - qStart) / 1000);
+  updateScoreDisplay();
 }
 
-function netScore()  { return correct - incorrect; }
-function accuracy()  { return attempted ? Math.round((correct/attempted)*100) : 0; }
-function avgTime()   {
-  if (!questionTimes.length) return '—';
-  return (questionTimes.reduce((a,b)=>a+b,0)/questionTimes.length).toFixed(1) + 's';
+const netScore = () => correct - incorrect;            // negative marking: wrong = −1
+const accuracy = () => attempted ? Math.round((correct / attempted) * 100) : 0;
+const avgTime  = () => questionTimes.length
+  ? (questionTimes.reduce((a, b) => a + b, 0) / questionTimes.length).toFixed(1) + 's'
+  : '—';
+
+function updateScoreDisplay() {
+  $('correct-count').textContent   = `${correct} ✓`;
+  $('incorrect-count').textContent = `${incorrect} ✗`;
+  $('net-count').textContent       = `${netScore()} pts`;
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  LEADERBOARD  (localStorage, top 5 per mode+duration)
+//  LEADERBOARD STORAGE (top 5 per mode + duration, saved on this device)
 // ═══════════════════════════════════════════════════════════════
 
-function lbKey(mode, duration) {
-  return `mq_lb_${mode}_${duration}`;
+const lbKey = (modeKey, duration) => `mq_lb_${modeKey}_${duration}`;
+
+function loadLB(modeKey, duration) {
+  try { return JSON.parse(localStorage.getItem(lbKey(modeKey, duration))) || []; }
+  catch (e) { return []; }
 }
 
-function loadLB(mode, duration) {
-  try { return JSON.parse(localStorage.getItem(lbKey(mode, duration))) || []; }
-  catch(e) { return []; }
+function saveLB(modeKey, duration, entries) {
+  try { localStorage.setItem(lbKey(modeKey, duration), JSON.stringify(entries)); } catch (e) {}
 }
 
-function saveLB(mode, duration, entries) {
-  localStorage.setItem(lbKey(mode, duration), JSON.stringify(entries));
-}
-
-function submitScore(name, mode, duration, pts, acc, avgT) {
-  const entries = loadLB(mode, duration);
-  const entry = {
-    name: name || 'Anonymous',
-    pts,
-    acc,
-    avgTime: avgT,
-    date: new Date().toLocaleDateString('en-GB', {day:'numeric', month:'short'}),
-    ts: Date.now()
-  };
+// Adds an entry and returns the new top 5
+function submitScore(modeKey, duration, entry) {
+  const entries = loadLB(modeKey, duration);
   entries.push(entry);
-  entries.sort((a,b) => b.pts - a.pts || b.acc - a.acc);
+  entries.sort((a, b) => b.pts - a.pts || b.acc - a.acc || a.ts - b.ts);
   const top5 = entries.slice(0, 5);
-  saveLB(mode, duration, top5);
+  saveLB(modeKey, duration, top5);
   return top5;
 }
 
-function isNewRecord(mode, duration, pts) {
-  const entries = loadLB(mode, duration);
-  return entries.length === 0 || pts > entries[0].pts;
-}
+const rankLabel = i => ['🥇', '🥈', '🥉'][i] || String(i + 1);
 
-// ── Rank medal helper ──
-function rankClass(i) {
-  return i===0 ? 'gold' : i===1 ? 'silver' : i===2 ? 'bronze' : '';
-}
-function rankLabel(i) {
-  return i===0 ? '🥇' : i===1 ? '🥈' : i===2 ? '🥉' : i+1;
-}
-
-function renderLBRows(entries, tbodyId, currentName, currentTs, compact) {
-  const tbody = document.getElementById(tbodyId);
-  if (!entries || !entries.length) {
+function renderLBRows(entries, tbodyId, highlightTs, compact) {
+  const tbody = $(tbodyId);
+  if (!entries.length) {
     tbody.innerHTML = `<tr><td colspan="5" class="lb-empty">No scores yet. Be the first!</td></tr>`;
     return;
   }
-  tbody.innerHTML = entries.map((e,i) => {
-    const isMe = currentTs && e.ts === currentTs;
-    const medal = `<span class="lb-rank ${rankClass(i)}">${rankLabel(i)}</span>`;
-    const newTag = isMe ? `<span class="lb-new">★ you</span>` : '';
+  tbody.innerHTML = entries.map((e, i) => {
+    const you  = highlightTs && e.ts === highlightTs ? '<span class="lb-new">★ you</span>' : '';
+    const rank = `<span class="lb-rank">${rankLabel(i)}</span>`;
+    const name = escapeHtml(e.name);
     if (compact) {
-      return `<tr>
-        <td>${medal}</td>
-        <td class="lb-name">${e.name}${newTag}</td>
-        <td class="lb-score">${e.pts}</td>
-      </tr>`;
+      return `<tr><td>${rank}</td><td class="lb-name">${name}${you}</td><td class="lb-score r">${e.pts}</td></tr>`;
     }
+    const detail = [e.avgTime ? `${e.avgTime} avg` : '', e.nums && e.nums.length ? `nums: ${numsLabel(e.nums)}` : '']
+      .filter(Boolean).join(' · ');
     return `<tr>
-      <td>${medal}</td>
-      <td class="lb-name">${e.name}${newTag}<br><span class="lb-detail">${e.avgTime} avg</span></td>
-      <td class="lb-score">${e.pts}</td>
-      <td class="lb-detail">${e.acc}%</td>
-      <td class="lb-detail">${e.date}</td>
+      <td>${rank}</td>
+      <td class="lb-name">${name}${you}<br><span class="lb-detail">${escapeHtml(detail)}</span></td>
+      <td class="lb-score r">${e.pts}</td>
+      <td class="lb-detail r">${e.acc}%</td>
+      <td class="lb-detail r">${escapeHtml(e.date)}</td>
     </tr>`;
   }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  UI HELPERS
+//  QUIZ FLOW
 // ═══════════════════════════════════════════════════════════════
 
-function showScreen(name) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`screen-${name}`).classList.add('active');
-}
-
-function updateTimerDisplay(remaining) {
-  document.getElementById('timer-display').textContent = formatTime(remaining);
-  document.getElementById('progress-bar').style.width = `${(remaining/totalDurationSecs)*100}%`;
-  if (remaining <= 30) document.getElementById('timer-display').classList.add('urgent');
-}
-
-function updateScoreDisplay() {
-  document.getElementById('correct-count').textContent  = `${correct} ✓`;
-  document.getElementById('incorrect-count').textContent = `${incorrect} ✗`;
-  document.getElementById('net-count').textContent      = `${netScore()} pts`;
-}
-
-// ═══════════════════════════════════════════════════════════════
-//  QUIZ LOGIC
-// ═══════════════════════════════════════════════════════════════
-
+// Everything about the running session is frozen here at the start
+let session = null;            // { modeKey, duration, nums, isMC, isCustom, name }
+let sessionActive = false;
+let answered = false;          // stops double-submits while feedback is showing
 let currentQuestion = null;
+let lastQuestionText = '';
+let nextQuestionTimeout = null;
+
+function nextQuestion() {
+  let q, tries = 0;
+  do {
+    q = session.isCustom ? generateCustomQuestion(session.nums) : generateStandardQuestion();
+    tries++;
+  } while (q.question === lastQuestionText && tries < 8);   // avoid back-to-back repeats
+  lastQuestionText = q.question;
+  return q;
+}
 
 function presentQuestion() {
-  currentQuestion = generateQuestion();
-  startQClock();
+  if (!sessionActive) return;
+  currentQuestion = nextQuestion();
+  answered = false;
+  qStart = Date.now();
 
-  document.getElementById('question-display').textContent = currentQuestion.question;
-  document.getElementById('feedback').textContent = '';
-  document.getElementById('feedback').className   = '';
+  $('question-display').textContent = currentQuestion.question;
+  $('feedback').textContent = '';
+  $('feedback').className = '';
 
-  if (selectedMode === 'mc') {
-    document.getElementById('format-badge').textContent = 'multiple choice';
-    renderMC();
-    document.getElementById('mc-options').style.display = 'grid';
-    document.getElementById('fi-form').style.display    = 'none';
+  if (session.isMC) {
+    $('format-badge').textContent = 'multiple choice';
+    renderMultipleChoice();
+    $('mc-options').style.display = 'grid';
+    $('fi-form').style.display = 'none';
   } else {
-    document.getElementById('format-badge').textContent = 'written answer';
-    document.getElementById('mc-options').style.display = 'none';
-    document.getElementById('fi-form').style.display    = 'flex';
-    document.getElementById('fi-input').value = '';
-    setTimeout(() => document.getElementById('fi-input').focus(), 50);
+    $('format-badge').textContent = 'written answer';
+    $('mc-options').style.display = 'none';
+    $('fi-form').style.display = 'flex';
+    $('fi-input').value = '';
+    $('fi-input').focus();
   }
 }
 
-function renderMC() {
-  const {answer, operation} = currentQuestion;
-  const distractors = generateDistractors(answer, operation);
-  const opts = [answer, ...distractors].sort(() => Math.random() - 0.5);
+function renderMultipleChoice() {
+  const distractors = session.isCustom
+    ? generateCustomDistractors(currentQuestion)
+    : generateDistractors(currentQuestion.answer, currentQuestion.operation);
+  const options = [currentQuestion.answer, ...distractors].sort(() => Math.random() - 0.5);
 
-  const container = document.getElementById('mc-options');
+  const container = $('mc-options');
   container.innerHTML = '';
-
-  opts.forEach(opt => {
+  options.forEach(opt => {
     const btn = document.createElement('button');
     btn.className = 'mc-btn';
-    btn.textContent = opt;
-    btn.addEventListener('click', () => {
-      container.querySelectorAll('.mc-btn').forEach(b => b.disabled = true);
-      const ok = opt == currentQuestion.answer;
-      recordAnswer(ok);
-      updateScoreDisplay();
-      btn.classList.add(ok ? 'correct' : 'incorrect');
-      if (!ok) {
-        container.querySelectorAll('.mc-btn').forEach(b => {
-          if (b.textContent == currentQuestion.answer) b.classList.add('correct');
-        });
-      }
-      setTimeout(presentQuestion, 450);
-    });
+    btn.textContent = fmt(opt);
+    btn.addEventListener('click', () => handleMCAnswer(opt, btn, container));
     container.appendChild(btn);
   });
 }
 
-function handleFISubmit() {
-  const raw = document.getElementById('fi-input').value.trim();
-  if (!raw) return;
-  const ua  = parseFloat(raw);
-  const ok  = Math.abs(ua - currentQuestion.answer) < 0.05;
+function handleMCAnswer(chosen, clickedBtn, container) {
+  if (!sessionActive || answered) return;
+  answered = true;
+
+  const ok = Math.abs(chosen - currentQuestion.answer) < 1e-9;
   recordAnswer(ok);
-  updateScoreDisplay();
-  const fb = document.getElementById('feedback');
-  fb.textContent = ok ? '✓ Correct' : `✗ Answer was ${currentQuestion.answer}`;
-  fb.className   = ok ? 'correct' : 'incorrect';
-  setTimeout(presentQuestion, 550);
+  container.querySelectorAll('.mc-btn').forEach(b => b.disabled = true);
+  clickedBtn.classList.add(ok ? 'correct' : 'incorrect');
+  if (!ok) {
+    container.querySelectorAll('.mc-btn').forEach(b => {
+      if (b.textContent === fmt(currentQuestion.answer)) b.classList.add('correct');
+    });
+  }
+  nextQuestionTimeout = setTimeout(presentQuestion, 450);
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  END OF SESSION
-// ═══════════════════════════════════════════════════════════════
+function handleWrittenSubmit() {
+  if (!sessionActive || answered) return;
+  const value = parseTypedAnswer($('fi-input').value);
+  if (value === null) return;              // empty or not a number: ignore
+  answered = true;
 
-let lastEntryTs = null;
+  const ok = isAnswerCorrect(value, currentQuestion.answer);
+  recordAnswer(ok);
+  const fb = $('feedback');
+  fb.textContent = ok ? '✓ Correct' : `✗ ${currentQuestion.question} = ${fmt(currentQuestion.answer)}`;
+  fb.className = ok ? 'correct' : 'incorrect';
+  nextQuestionTimeout = setTimeout(presentQuestion, 600);
+}
+
+function startSession() {
+  const name = $('player-name').value.trim();
+  const err = $('start-error');
+
+  if (!name) {
+    err.textContent = 'Please enter your name first.';
+    $('player-name').focus();
+    return;
+  }
+  if (selectedMode === 'custom' && customNumbers.length < 2) {
+    err.textContent = 'Pick at least 2 numbers for Mode 3.';
+    return;
+  }
+  err.textContent = '';
+  saveSettings();
+
+  const modeKey = activeModeKey();
+  session = {
+    name,
+    modeKey,
+    duration: selectedDuration,
+    nums: selectedMode === 'custom' ? [...customNumbers] : [],
+    isCustom: selectedMode === 'custom',
+    isMC: modeKey.endsWith('mc'),
+  };
+
+  resetScore();
+  updateScoreDisplay();
+  lastQuestionText = '';
+  sessionActive = true;
+  $('neg-note').textContent = 'Incorrect answers: −1 point' + (session.isCustom ? ' · division rounded to 2 d.p.' : '');
+
+  showScreen('quiz');
+  startTimer(session.duration, updateTimerDisplay, endSession);
+  presentQuestion();
+}
+
+function quitSession() {
+  if (!confirm('Quit this session? Your score will not be saved.')) return;
+  sessionActive = false;
+  clearTimeout(nextQuestionTimeout);
+  stopTimer();
+  showScreen('start');
+}
 
 function endSession() {
+  sessionActive = false;
+  clearTimeout(nextQuestionTimeout);
   stopTimer();
 
-  const pts = netScore();
-  const acc = accuracy();
-  const avg = avgTime();
+  const pts = netScore(), acc = accuracy(), avg = avgTime();
+  let top5, myTs = null, rankText = '';
 
-  // Submit to leaderboard
-  const name   = playerName || 'Anonymous';
-  lastEntryTs  = Date.now();
-  const entries = submitScore(name, selectedMode, selectedDuration, pts, acc, avg);
-  // Fix timestamp: the entry we just added is the one matching our score and time
-  // Find it and patch ts so we can highlight it
-  const myEntry = entries.find(e => e.name===name && e.pts===pts && !e._found);
-  if (myEntry) { myEntry.ts = lastEntryTs; myEntry._found = true; saveLB(selectedMode, selectedDuration, entries); }
+  if (attempted > 0) {
+    const entry = {
+      name: session.name, pts, acc, avgTime: avg, attempted,
+      nums: session.nums,
+      date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+      ts: Date.now(),
+    };
+    myTs = entry.ts;
+    top5 = submitScore(session.modeKey, session.duration, entry);
+    const pos = top5.findIndex(e => e.ts === myTs);
+    rankText = pos === 0 ? '🏆 New #1 score!' : pos > 0 ? `You made the top 5 (#${pos + 1})` : 'Not in the top 5 this time';
+  } else {
+    top5 = loadLB(session.modeKey, session.duration);
+    rankText = 'No answers recorded, so no score was saved';
+  }
 
-  // Populate results screen
-  document.getElementById('result-pts').textContent      = pts > 0 ? `+${pts}` : `${pts}`;
-  document.getElementById('result-pct-line').textContent = `${acc}% accuracy`;
-  document.getElementById('r-attempted').textContent     = attempted;
-  document.getElementById('r-correct').textContent       = correct;
-  document.getElementById('r-incorrect').textContent     = incorrect;
-  document.getElementById('r-avg-time').textContent      = avg;
-
-  const modeLabel = selectedMode === 'mc' ? 'Mode 1 · Multiple choice' : 'Mode 2 · Written';
-  document.getElementById('result-lb-meta').textContent = `${modeLabel} · ${selectedDuration} min`;
-
-  const freshEntries = loadLB(selectedMode, selectedDuration);
-  renderLBRows(freshEntries, 'result-lb-body', name, lastEntryTs, true);
+  $('result-pts').textContent       = pts > 0 ? `+${pts}` : `${pts}`;
+  $('result-pct-line').textContent  = `${acc}% accuracy`;
+  $('result-meta-line').textContent = `${MODE_LABELS[session.modeKey]} · ${session.duration} min` +
+    (session.nums.length ? ` · numbers: ${numsLabel(session.nums)}` : '');
+  $('result-rank').textContent      = rankText;
+  $('r-attempted').textContent      = attempted;
+  $('r-correct').textContent        = correct;
+  $('r-incorrect').textContent      = incorrect;
+  $('r-avg-time').textContent       = avg;
+  $('result-lb-meta').textContent   = `${MODE_SHORT[session.modeKey]} · ${session.duration} min`;
+  renderLBRows(top5, 'result-lb-body', myTs, true);
 
   showScreen('results');
 }
@@ -904,90 +1090,77 @@ function endSession() {
 //  LEADERBOARD SCREEN
 // ═══════════════════════════════════════════════════════════════
 
-let lbMode     = 'mc';
+let lbModeKey  = 'mc';
 let lbDuration = 3;
 
-function showLeaderboardScreen() {
-  lbMode     = selectedMode;
-  lbDuration = selectedDuration;
-  buildDurationGrid('lb-duration-grid', d => { lbDuration = d; refreshLBScreen(); buildDurationGrid('lb-duration-grid', d2 => { lbDuration=d2; refreshLBScreen(); buildDurationGrid('lb-duration-grid', ()=>{}, lbDuration); }, lbDuration); });
-  switchLBTab(lbMode);
-  showScreen('leaderboard');
-}
-
-// Rebuild LB duration grid with correct selection
-function buildLBDurationGrid() {
-  const container = document.getElementById('lb-duration-grid');
-  container.innerHTML = '';
-  DURATIONS.forEach(d => {
+function buildLBTabs() {
+  const wrap = $('lb-tabs');
+  wrap.innerHTML = '';
+  Object.keys(MODE_SHORT).forEach(key => {
     const btn = document.createElement('button');
-    btn.className = 'dur-btn' + (d === lbDuration ? ' selected' : '');
-    btn.dataset.dur = d;
-    btn.textContent = d === 1 ? '1 min' : `${d}m`;
-    btn.onclick = () => { lbDuration = d; buildLBDurationGrid(); refreshLBScreen(); };
-    container.appendChild(btn);
+    btn.className = 'tab-btn' + (key === lbModeKey ? ' active' : '');
+    btn.textContent = MODE_LABELS[key];
+    btn.addEventListener('click', () => { lbModeKey = key; refreshLBScreen(); });
+    wrap.appendChild(btn);
   });
 }
 
-function switchLBTab(mode) {
-  lbMode = mode;
-  document.getElementById('lb-tab-mc').classList.toggle('active', mode==='mc');
-  document.getElementById('lb-tab-fi').classList.toggle('active', mode==='fi');
-  buildLBDurationGrid();
-  refreshLBScreen();
+function refreshLBScreen() {
+  buildLBTabs();
+  buildDurationGrid('lb-duration-grid', () => lbDuration, d => { lbDuration = d; refreshLBScreen(); });
+  $('lb-meta-line').textContent = `${MODE_SHORT[lbModeKey]} · ${lbDuration} min`;
+  renderLBRows(loadLB(lbModeKey, lbDuration), 'lb-body', null, false);
 }
 
-function refreshLBScreen() {
-  const entries  = loadLB(lbMode, lbDuration);
-  const modeLabel= lbMode==='mc' ? 'Mode 1 · Multiple choice' : 'Mode 2 · Written';
-  document.getElementById('lb-meta-line').textContent = `${modeLabel} · ${lbDuration} min`;
-  renderLBRows(entries, 'lb-body', null, null, false);
+function openLeaderboard() {
+  lbModeKey  = activeModeKey();
+  lbDuration = selectedDuration;
+  refreshLBScreen();
+  showScreen('leaderboard');
 }
 
 function clearLeaderboard() {
-  if (confirm(`Clear the leaderboard for ${lbMode==='mc'?'Mode 1':'Mode 2'} · ${lbDuration} min?`)) {
-    localStorage.removeItem(lbKey(lbMode, lbDuration));
+  if (confirm(`Clear the leaderboard for ${MODE_LABELS[lbModeKey]} · ${lbDuration} min?`)) {
+    try { localStorage.removeItem(lbKey(lbModeKey, lbDuration)); } catch (e) {}
     refreshLBScreen();
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  INIT
+//  INIT & EVENT LISTENERS
 // ═══════════════════════════════════════════════════════════════
 
-function startSession() {
-  playerName = document.getElementById('player-name').value.trim();
-  if (!playerName) {
-    document.getElementById('player-name').focus();
-    document.getElementById('player-name').style.borderColor = 'var(--danger)';
-    setTimeout(() => document.getElementById('player-name').style.borderColor = '', 1500);
-    return;
-  }
+loadSettings();
+buildNumberGrid();
+buildDurationGrid('duration-grid', () => selectedDuration, d => { selectedDuration = d; refreshStartScreen(); saveSettings(); });
+refreshStartScreen();
 
-  resetScore();
-  updateScoreDisplay();
-  document.getElementById('timer-display').classList.remove('urgent');
-  document.getElementById('progress-bar').style.width = '100%';
-
-  showScreen('quiz');
-  startTimer(selectedDuration, updateTimerDisplay, endSession);
-  presentQuestion();
-}
-
-// Build start screen grids on load
-buildDurationGrid('duration-grid', d => selectDuration(d));
-selectDuration(3);
-
-// Event listeners
-document.getElementById('start-btn').addEventListener('click', startSession);
-document.getElementById('restart-btn').addEventListener('click', () => showScreen('start'));
-document.getElementById('fi-submit').addEventListener('click', handleFISubmit);
-document.getElementById('fi-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleFISubmit();
+document.querySelectorAll('.mode-btn').forEach(b => b.addEventListener('click', () => {
+  selectedMode = b.dataset.mode; refreshStartScreen(); saveSettings();
+}));
+document.querySelectorAll('.seg-btn').forEach(b => b.addEventListener('click', () => {
+  customStyle = b.dataset.style; refreshStartScreen(); saveSettings();
+}));
+$('num-all').addEventListener('click', () => {
+  customNumbers = Array.from({ length: 50 }, (_, i) => i + 1); refreshStartScreen(); saveSettings();
 });
-document.getElementById('player-name').addEventListener('input', () => {
-  document.getElementById('player-name').style.borderColor = '';
+$('num-clear').addEventListener('click', () => {
+  customNumbers = []; refreshStartScreen(); saveSettings();
 });
+
+$('start-btn').addEventListener('click', startSession);
+$('view-lb-btn').addEventListener('click', openLeaderboard);
+$('results-lb-btn').addEventListener('click', openLeaderboard);
+$('restart-btn').addEventListener('click', () => showScreen('start'));
+$('lb-back-btn').addEventListener('click', () => showScreen('start'));
+$('lb-clear-btn').addEventListener('click', clearLeaderboard);
+$('quit-btn').addEventListener('click', quitSession);
+
+$('fi-submit').addEventListener('click', handleWrittenSubmit);
+// Stops the Submit button stealing focus, so the keyboard stays open on phones
+$('fi-submit').addEventListener('pointerdown', e => e.preventDefault());
+$('fi-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleWrittenSubmit(); });
+$('player-name').addEventListener('input', () => { $('start-error').textContent = ''; });
 </script>
 </body>
 </html>
